@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hasil — LogicForge</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header><div><h1>LogicForge</h1><p>Hasil Operasi Himpunan</p></div></header>
+<main>
+<a class="back" href="/">← Kembali ke Dashboard</a>
+<section class="card">
+<h2>{{ operation }}</h2>
+{% if pie_value is not none %}
+<p>Jumlah anggota unik berdasarkan Prinsip Inklusi-Eksklusi:</p>
+<div class="big-number">{{ pie_value }}</div>
+<p>Himpunan yang dipilih: {{ pie_selected|join(", ") }}</p>
+{% else %}
+<p>Hasil: <b>{{ result|length }} mahasiswa</b></p>
+<div class="result-list">
+{% for name in result %}<span>{{ name }}</span>{% else %}<span>Tidak ada anggota.</span>{% endfor %}
+</div>
+{% endif %}
+</section>
+
+{% if venn %}
+<section class="card center">
+<h2>Diagram Venn Otomatis</h2>
+<img class="venn" src="data:image/png;base64,{{ venn }}" alt="Diagram Venn">
+</section>
+{% endif %}
+
+<section class="card">
+<h2>Ringkasan Himpunan</h2>
+<table>
+<tr><th>Himpunan</th><th>Keterangan</th><th>Jumlah</th></tr>
+{% for key, desc in categories.items() %}
+<tr><td>{{key}}</td><td>{{desc}}</td><td>{{sets[key]|length}}</td></tr>
+{% endfor %}
+</table>
+</section>
+</main>
+</body>
+</html>

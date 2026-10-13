@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LogicForge — PJBL-2</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <div>
+    <h1>LogicForge</h1>
+    <p>PJBL-2 — Sistem Klasifikasi Data dengan Himpunan</p>
+  </div>
+</header>
+
+<main>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+    <div class="alert {{ category }}">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<section class="card">
+<h2>1. Dataset Mahasiswa</h2>
+<div class="actions">
+  <a class="button" href="/seed/1">Muat Dataset 1</a>
+  <a class="button" href="/seed/2">Muat Dataset 2</a>
+</div>
+<form action="/upload" method="post" enctype="multipart/form-data" class="inline-form">
+  <input type="file" name="file" accept=".csv" required>
+  <button type="submit">Upload CSV</button>
+</form>
+
+<table>
+<tr><th>NIM</th><th>Nama</th><th>Prodi</th><th>Semester</th><th>JK</th><th>Status</th><th>Aksi</th></tr>
+{% for s in students %}
+<tr>
+<td>{{s.nim}}</td><td>{{s.nama}}</td><td>{{s.prodi}}</td><td>{{s.semester}}</td>
+<td>{{s.jk}}</td><td>{{s.status}}</td>
+<td><form action="/delete/{{s.id}}" method="post"><button class="danger">Hapus</button></form></td>
+</tr>
+{% endfor %}
+</table>
+</section>
+
+<section class="grid">
+<div class="card">
+<h2>2. Input Data</h2>
+<form action="/add" method="post">
+<input name="nim" placeholder="NIM" required>
+<input name="nama" placeholder="Nama" required>
+<input name="prodi" placeholder="Prodi" required>
+<input name="semester" type="number" min="1" placeholder="Semester" required>
+<select name="jk"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select>
+<select name="status"><option>Aktif</option><option>Tidak Aktif</option></select>
+<button type="submit">Tambah Data</button>
+</form>
+</div>
+
+<div class="card">
+<h2>3. Himpunan</h2>
+{% for key, desc in categories.items() %}
+<div class="set-box"><b>{{key}}</b> — {{desc}}<br>
+<small>{{ sets[key]|length }} anggota: {{ sets[key]|join(", ") }}</small></div>
+{% endfor %}
+</div>
+</section>
+
+<section class="card">
+<h2>4. Operasi Himpunan</h2>
+<form action="/operation" method="post" class="operation-form">
+<select name="operation" id="operation" onchange="toggleY()">
+<option value="union">Union (∪)</option>
+<option value="intersection">Intersection (∩)</option>
+<option value="difference">Difference (−)</option>
+<option value="complement">Complement (ᶜ)</option>
+</select>
+<select name="x">
+{% for key in categories %}<option>{{key}}</option>{% endfor %}
+</select>
+<select name="y" id="y">
+{% for key in categories %}<option>{{key}}</option>{% endfor %}
+</select>
+<button type="submit">Proses</button>
+</form>
+</section>
+
+<section class="card">
+<h2>5. Prinsip Inklusi-Eksklusi</h2>
+<p>Pilih 2 atau 3 kategori untuk menghitung jumlah anggota unik.</p>
+<form action="/pie" method="post" class="pie-form">
+{% for key in categories %}
+<label><input type="checkbox" name="sets" value="{{key}}"> {{key}}</label>
+{% endfor %}
+<button type="submit">Hitung PIE</button>
+</form>
+</section>
+
+<section class="card">
+<h2>Rumus PIE</h2>
+<p><b>2 himpunan:</b> |A ∪ B| = |A| + |B| − |A ∩ B|</p>
+<p><b>3 himpunan:</b> |A ∪ B ∪ C| = |A| + |B| + |C| − |A∩B| − |A∩C| − |B∩C| + |A∩B∩C|</p>
+</section>
+</main>
+<script>
+function toggleY(){
+  const op=document.getElementById("operation").value;
+  document.getElementById("y").style.display = op==="complement" ? "none" : "inline-block";
+}
+toggleY();
+</script>
+</body>
+</html>
